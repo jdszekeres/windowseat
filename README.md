@@ -16,8 +16,8 @@ python windowseat.py start_location end_location duration fps zoom orientation
 - start_location: The starting airport code (e.g., JFK).
 - end_location: The ending airport code (e.g., LAX).
 - duration: The length of the video in seconds.
-fps: The frames per second of the video.
-z- oom: The zoom level of the Mapbox satellite images (0-22).
+- fps: The frames per second of the video.
+- zoom: The zoom level of the Mapbox satellite images (0-22).
 - orientation: The orientation of the camera, either 'l' for left or 'r' for right.
 
 ### Output
