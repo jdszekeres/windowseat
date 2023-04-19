@@ -4,10 +4,10 @@ import numpy as np
 import os
 from math import atan2, degrees
 import threading
-
-def get_photo(center, zoom, key, bearing, loc):
+import random
+def get_photo(center, zoom, key, bearing, loc, style="yopo/clgn5udy3001u01pl40l05mwj"):
     # Define the download URL
-    url = f"https://api.mapbox.com/styles/v1/yopo/clgn5udy3001u01pl40l05mwj/static/{center[0]},{center[1]},{zoom},{bearing},60/480x640?access_token={key}"
+    url = f"https://api.mapbox.com/styles/v1/{style}/static/{center[0]},{center[1]},{zoom},{bearing},60/480x640?access_token={key}"
     # Download the image
     response = requests.get(url, stream=True)
     with open('{}.jpg'.format(loc), 'wb') as f:
@@ -47,14 +47,14 @@ time = 30 # in secs
 fps = 30 #fps
 count = fps * time
 zoom=10.5
-key = "pk.eyJ1IjoieW9wbyIsImEiOiJjbDA0bzhoM2EwMWhiM2NxajV2Zm1lYmpyIn0.kL4KlQH8tl89C6dJtL31gw"
+keys = open("mapboxkey").read().splitlines()
 pol = get_points_on_line(start,end,count)
 bearing = get_angle_between_coordinates(start_1,end_1)+90
 threads = []
 # Start a thread for each photo download
 for i, v in enumerate(pol):
     filename = f"photos/{i:04n}"
-    t = threading.Thread(target=get_photo, args=(v, zoom, key, bearing, filename))
+    t = threading.Thread(target=get_photo, args=(v, zoom, random.choice(keys), bearing, filename))
     threads.append(t)
     t.start()
 
