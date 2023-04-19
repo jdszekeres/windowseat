@@ -1,37 +1,29 @@
-# WindowSeat
-WindowSeat is a Python project that generates a video of the view out of a plane as if on the window seat. The project uses the Mapbox API to download satellite images along a flight path and stitches them together to create a video.
+# Windowseat - Python script that creates a video from a flight path
+This Python script generates a video from a flight path by downloading satellite images from Mapbox API and stitching them together into a video using FFmpeg.
 
-## Installation
-Clone the repository
-bash
-Copy code
-git clone https://github.com/<username>/WindowSeat.git
-Install the required packages
-Copy code
-pip install -r requirements.txt
-Obtain a Mapbox API key from https://account.mapbox.com/access-tokens/
+## Requirements
+- Python 3
+- requests
+- numpy
+- FFmpeg
 
-Add your Mapbox API key to the mapboxkey file.
+You will also need a Mapbox API key. If you don't have one, you can create a free account on their website to obtain it.
 
 ## Usage
-Call the function get_video(start, end, time, fps) with the following parameters:
+```bash
+python windowseat.py start_location end_location duration fps zoom orientation
+```
+- start_location: The starting airport code (e.g., JFK).
+- end_location: The ending airport code (e.g., LAX).
+- duration: The length of the video in seconds.
+fps: The frames per second of the video.
+z- oom: The zoom level of the Mapbox satellite images (0-22).
+- orientation: The orientation of the camera, either 'l' for left or 'r' for right.
 
-start: Tuple of starting coordinates (latitude, longitude)
-end: Tuple of ending coordinates (latitude, longitude)
-time: Flight time in seconds
-fps: Frames per second for the video
-Example:
+### Output
 
+The script generates a video file named flight.mp4.
 
-from WindowSeat import get_video
-
-start = (32.7317,-117.19)
-end = (40.76078, -111.89105)
-time = 30
-fps = 30
-
-get_video(start, end, time, fps)
-This will create a video file flight.mp4 in the current directory.
-
-## License
-This project is licensed under the MIT License. Feel free to use and modify the code for your own purposes.
+## Credits
+This script uses the Global Airport Database by Arash Partow to obtain the latitude and longitude of the airports.
+# MIT License
