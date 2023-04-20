@@ -9,16 +9,23 @@ import sys
 import csv
 from PIL import Image
 from io import BytesIO
+import staticmaps
 
 def get_photo(center, zoom, key, bearing, loc, style="yopo/clgn5udy3001u01pl40l05mwj"):
     # Define the download URLs
+    minimap_context = staticmaps.Context()
+    minimap_context.set_tile_provider(staticmaps.tile_provider_OSM)
+    point = staticmaps.create_latlng(center[1],center[0])
     minimap_url = f"https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s+555555({center[0]},{center[1]})/{center[0]},{center[1]},6,0/100x100?access_token={key}"
     image_url = f"https://api.mapbox.com/styles/v1/{style}/static/{center[0]},{center[1]},{zoom},{bearing},60/480x640?access_token={key}"
     # Download the images
-    minimap_resp = requests.get(minimap_url, stream=True)
+    # minimap_resp = requests.get(minimap_url, stream=True)
+    minimap_context.add_object(staticmaps.Marker(point, color=staticmaps.RED, size=12))
+    minimap_context.set_center(point)
+    minimap_context.set_zoom(6)
     image_resp = requests.get(image_url, stream=True)
     # Open the minimap image and resize it to 100x100 pixels
-    minimap_img = Image.open(BytesIO(minimap_resp.content)).resize((100, 100))
+    minimap_img = minimap_context.render_pillow(100,100)
     # Open the image and create a new blank image with the same dimensions
     image = Image.open(BytesIO(image_resp.content))
     # Paste the minimap image on the bottom left corner of the new image
