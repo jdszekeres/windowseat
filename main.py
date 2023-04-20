@@ -7,14 +7,26 @@ import threading
 import random
 import sys
 import csv
+from PIL import Image
+from io import BytesIO
+
 def get_photo(center, zoom, key, bearing, loc, style="yopo/clgn5udy3001u01pl40l05mwj"):
-    # Define the download URL
-    url = f"https://api.mapbox.com/styles/v1/{style}/static/{center[0]},{center[1]},{zoom},{bearing},60/480x640?access_token={key}"
-    # Download the image
-    response = requests.get(url, stream=True)
-    with open('{}.jpg'.format(loc), 'wb') as f:
-        response.raw.decode_content = True
-        shutil.copyfileobj(response.raw, f)
+    # Define the download URLs
+    minimap_url = f"https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s+555555({center[0]},{center[1]})/{center[0]},{center[1]},6,0/100x100?access_token={key}"
+    image_url = f"https://api.mapbox.com/styles/v1/{style}/static/{center[0]},{center[1]},{zoom},{bearing},60/480x640?access_token={key}"
+    # Download the images
+    minimap_resp = requests.get(minimap_url, stream=True)
+    image_resp = requests.get(image_url, stream=True)
+    # Open the minimap image and resize it to 100x100 pixels
+    minimap_img = Image.open(BytesIO(minimap_resp.content)).resize((100, 100))
+    # Open the image and create a new blank image with the same dimensions
+    image = Image.open(BytesIO(image_resp.content))
+    # Paste the minimap image on the bottom left corner of the new image
+    image.paste(minimap_img, (0, 0))
+    # Save the new image to disk
+    image.save(f"{loc}.jpg")
+
+
 
 def get_points_on_line(coord1, coord2, count):
     x1, y1 = coord1

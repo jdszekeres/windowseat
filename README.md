@@ -7,7 +7,7 @@ This Python script generates a video from a flight path by downloading satellite
 - numpy
 - FFmpeg
 
-You will also need a Mapbox API key. If you don't have one, you can create a free account on their website to obtain it.
+You will also need a Mapbox API key. If you don't have one, you can create a free account on their website to obtain it. Put it in the file  **mapboxkey**
 
 ## Usage
 ```bash
