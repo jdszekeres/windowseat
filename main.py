@@ -60,45 +60,46 @@ def get_angle_between_coordinates(coord1, coord2):
 
     return angle_degrees
 
-# Get command line arguments for start, end, time, fps, and zoom
-start = sys.argv[1]
-end = sys.argv[2]
-time = int(sys.argv[3])
-fps = int(sys.argv[4])
-zoom = float(sys.argv[5])
-left = "l" in sys.argv[6].lower()
-with open("GlobalAirportDatabase.txt") as file:
-    print("This program uses the Global Airport Database by Arash Partow")
-    csvs = csv.reader(file, delimiter=":")
-    for i in csvs:
-        if i[1] == start.upper():
-            sstart = [float(i[-1]),float(i[-2])]
-            print("start: ",i[3])
-        if i[1] == end.upper():
-            send = [float(i[-1]),float(i[-2])]
-            print("end: ",i[3])
+if __name__ == "__main__":
+    # Get command line arguments for start, end, time, fps, and zoom
+    start = sys.argv[1]
+    end = sys.argv[2]
+    time = int(sys.argv[3])
+    fps = int(sys.argv[4])
+    zoom = float(sys.argv[5])
+    left = "l" in sys.argv[6].lower()
+    with open("GlobalAirportDatabase.txt") as file:
+        print("This program uses the Global Airport Database by Arash Partow")
+        csvs = csv.reader(file, delimiter=":")
+        for i in csvs:
+            if i[1] == start.upper():
+                sstart = [float(i[-1]),float(i[-2])]
+                print("start: ",i[3])
+            if i[1] == end.upper():
+                send = [float(i[-1]),float(i[-2])]
+                print("end: ",i[3])
 
-start = sstart
-end = send
+    start = sstart
+    end = send
 
-keys = open("mapboxkey").read().splitlines()
-pol = get_points_on_line(start, end, fps * time)
-bearing = get_angle_between_coordinates(start, end) + 90
-if left:
-    bearing -= 180
-threads = []
+    keys = open("mapboxkey").read().splitlines()
+    pol = get_points_on_line(start, end, fps * time)
+    bearing = get_angle_between_coordinates(start, end) + 90
+    if left:
+        bearing -= 180
+    threads = []
 
-# Start a thread for each photo download
-for i, v in enumerate(pol):
-    filename = f"photos/{i:04n}"
-    t = threading.Thread(target=get_photo, args=(v, zoom, random.choice(keys), bearing, filename))
-    threads.append(t)
-    t.start()
+    # Start a thread for each photo download
+    for i, v in enumerate(pol):
+        filename = f"photos/{i:04n}"
+        t = threading.Thread(target=get_photo, args=(v, zoom, random.choice(keys), bearing, filename))
+        threads.append(t)
+        t.start()
 
-# Wait for all threads to finish
-for t in threads:
-    t.join()
+    # Wait for all threads to finish
+    for t in threads:
+        t.join()
 
-code = run(f"ffmpeg -framerate {fps} -i 'photos/%04d.jpg' flight.mp4; rm photos.jpg".split(" "))
-if code.returncode != 0:
-    print(f"command 'ffmpeg -framerate {fps} -i 'photos/%04d.jpg' flight.mp4; rm photos/*.jpg' returned an non-zero return code. Make sure you have ffmpeg installed.")
+    code = run(f"ffmpeg -framerate {fps} -i 'photos/%04d.jpg' flight.mp4; rm photos.jpg".split(" "))
+    if code.returncode != 0:
+        print(f"command 'ffmpeg -framerate {fps} -i 'photos/%04d.jpg' flight.mp4; rm photos/*.jpg' returned an non-zero return code. Make sure you have ffmpeg installed.")
