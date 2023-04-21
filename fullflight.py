@@ -36,7 +36,20 @@ def create_flight_path(start, end, start_bearing, end_bearing, num_points):
     
     return coords
 
+import requests
+from bs4 import BeautifulSoup
 
+def get_true_heading(airport):
+    url = f'https://www.airnav.com/airport/{airport}'
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    text = soup.get_text()
+    lines = text.split('\n')
+    for line in lines:
+        if 'magnetic' in line and 'true' in line:
+            parts = line.split(',')
+            true_heading = parts[1].split()[0]
+            return true_heading
 
 start = (39.99994, -82.887177)  # Colombus, OH
 end = (40.641766, -73.780968)     # New York, NY
