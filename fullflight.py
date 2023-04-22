@@ -1,6 +1,6 @@
 from math import radians, sin, cos, atan2, sqrt, degrees, pow
 import windowseat
-
+import re, requests
 def create_flight_path(start, end, start_bearing, end_bearing, num_points):
     # Calculate the distance and bearing between the two points
     lat1, lon1 = start
@@ -36,27 +36,53 @@ def create_flight_path(start, end, start_bearing, end_bearing, num_points):
     
     return coords
 
-import requests
-from bs4 import BeautifulSoup
+def get_airport_info(airport,endport):
+    # Construct the URL for the airport's AirNav page
+    url = f"https://www.airnav.com/airport/{airport}"
+    
+    # Make a GET request to the URL and extract the page content
+    response = requests.get(url)
+    content = response.content.decode("utf-8")
+    
+    # Extract the latitude and longitude from the page content
+    start,end = windowseat.get_db(airport,endport)
+    
+    # Use regex to find all instances of "x magnetic, y true"
+    heading_pattern = r"(\d+) magnetic, (\d+) true"
+    heading_matches = re.findall(heading_pattern, content)
+    
+    # Extract the true headings from the matches
+    true_heading_start = [int(match[1]) for match in heading_matches][0]
+    
+    url = f"https://www.airnav.com/airport/{endport}"
+    response = requests.get(url)
+    content = response.content.decode("utf-8")
+    heading_pattern = r"(\d+) magnetic, (\d+) true"
+    heading_matches = re.findall(heading_pattern, content)
+    
+    # Extract the true headings from the matches
+    true_heading_end = [int(match[1]) for match in heading_matches][0]
+    # Make a GET request to the URL and extract the page content
 
-def get_true_heading(airport):
-    url = f'https://www.airnav.com/airport/{airport}'
-    page = requests.get(url)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    text = soup.get_text()
-    lines = text.split('\n')
-    for line in lines:
-        if 'magnetic' in line and 'true' in line:
-            parts = line.split(',')
-            true_heading = parts[1].split()[0]
-            return true_heading
 
-start = (39.99994, -82.887177)  # Colombus, OH
-end = (40.641766, -73.780968)     # New York, NY
-count = 20
+    
+    # Return a dictionary with the latitude, longitude, and true headings
+    airport_info = {
+        "start": start,
+        "end": end,
+        "true_headings": [true_heading_start,true_heading_end]
+    }
+    return airport_info
+
+
+ainfo = get_airport_info("SAN","DEN")
+print(ainfo)
+start = ainfo["start"][::-1]
+end = ainfo["end"][::-1]
+count = 30
 flight_path = create_flight_path(start, end, 101,121,count)
-
 for c,i in enumerate(flight_path):
-    zoom_level = (-0.00007096758 * i[3] + 9.437068112) + 10
-    windowseat.get_photo((i[1],i[0]),zoom_level,open("mapboxkey").read().splitlines()[0],i[2]+90,f"photos/{c}")
+    zoom_level = 17-((i[3]/36000)*5)
+    # f.write(f"{c}, {zoom_level}\n")
+    windowseat.get_photo((i[1],i[0]),zoom_level,open("mapboxkey").read().splitlines()[0],i[2]+90,f"photos/{c:04n}")
 

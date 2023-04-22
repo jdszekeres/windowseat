@@ -16,7 +16,6 @@ def get_photo(center, zoom, key, bearing, loc, style="yopo/clgn5udy3001u01pl40l0
     minimap_context = staticmaps.Context()
     minimap_context.set_tile_provider(staticmaps.tile_provider_OSM)
     point = staticmaps.create_latlng(center[1],center[0])
-    minimap_url = f"https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s+555555({center[0]},{center[1]})/{center[0]},{center[1]},6,0/100x100?access_token={key}"
     image_url = f"https://api.mapbox.com/styles/v1/{style}/static/{center[0]},{center[1]},{zoom},{bearing},60/480x640?access_token={key}"
     # Download the images
     # minimap_resp = requests.get(minimap_url, stream=True)
@@ -59,15 +58,7 @@ def get_angle_between_coordinates(coord1, coord2):
         angle_degrees += 360
 
     return angle_degrees
-
-if __name__ == "__main__":
-    # Get command line arguments for start, end, time, fps, and zoom
-    start = sys.argv[1]
-    end = sys.argv[2]
-    time = int(sys.argv[3])
-    fps = int(sys.argv[4])
-    zoom = float(sys.argv[5])
-    left = "l" in sys.argv[6].lower()
+def get_db(start,end):
     with open("GlobalAirportDatabase.txt") as file:
         print("This program uses the Global Airport Database by Arash Partow")
         csvs = csv.reader(file, delimiter=":")
@@ -78,9 +69,18 @@ if __name__ == "__main__":
             if i[1] == end.upper():
                 send = [float(i[-1]),float(i[-2])]
                 print("end: ",i[3])
+    return sstart, send
+if __name__ == "__main__":
+    # Get command line arguments for start, end, time, fps, and zoom
+    start = sys.argv[1]
+    end = sys.argv[2]
+    time = int(sys.argv[3])
+    fps = int(sys.argv[4])
+    zoom = float(sys.argv[5])
+    left = "l" in sys.argv[6].lower()
 
-    start = sstart
-    end = send
+
+    start, end = get_db(start,end)
 
     keys = open("mapboxkey").read().splitlines()
     pol = get_points_on_line(start, end, fps * time)
@@ -100,6 +100,6 @@ if __name__ == "__main__":
     for t in threads:
         t.join()
 
-    code = run(f"ffmpeg -framerate {fps} -i 'photos/%04d.jpg' flight.mp4; rm photos.jpg".split(" "))
+    code = run(f"ffmpeg -framerate {fps} -i 'photos/%04d.jpg' flight.mp4; rm photos/*.jpg".split(" "))
     if code.returncode != 0:
         print(f"command 'ffmpeg -framerate {fps} -i 'photos/%04d.jpg' flight.mp4; rm photos/*.jpg' returned an non-zero return code. Make sure you have ffmpeg installed.")
