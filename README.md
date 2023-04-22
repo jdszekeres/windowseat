@@ -11,19 +11,18 @@ You will also need a Mapbox API key. If you don't have one, you can create a fre
 
 ## Usage
 ```bash
-python windowseat.py start_location end_location duration fps zoom orientation
+python fullflight.py start_airport end_end duration fps orientation
 ```
 - start_location: The starting airport code (e.g., JFK).
 - end_location: The ending airport code (e.g., LAX).
 - duration: The length of the video in seconds.
 - fps: The frames per second of the video.
-- zoom: The zoom level of the Mapbox satellite images (0-22).
 - orientation: The orientation of the camera, either 'l' for left or 'r' for right.
 
 ### Output
 
-The script generates a video file named flight.mp4.
+The script generates a video file named flight.mp4 from satelite image stitched together.
 
 ## Credits
-This script uses the Global Airport Database by Arash Partow to obtain the latitude and longitude of the airports.
+This script uses the Global Airport Database by Arash Partow to obtain the latitude and longitude of the airports and airnav.com for runway headings.
 # MIT License

@@ -1,6 +1,11 @@
 from math import radians, sin, cos, atan2, sqrt, degrees, pow
 import windowseat
 import re, requests
+import sys
+from math import atan2, degrees
+import threading
+from subprocess import run
+
 def create_flight_path(start, end, start_bearing, end_bearing, num_points):
     # Calculate the distance and bearing between the two points
     lat1, lon1 = start
@@ -75,14 +80,30 @@ def get_airport_info(airport,endport):
     return airport_info
 
 
-ainfo = get_airport_info("SAN","DEN")
+ainfo = get_airport_info(sys.argv[1], sys.argv[2])
 print(ainfo)
 start = ainfo["start"][::-1]
 end = ainfo["end"][::-1]
-count = 30
+time = int(sys.argv[3])
+fps = int(sys.argv[4])
+left = "l" in sys.argv[5]
+count = time * fps
 flight_path = create_flight_path(start, end, 101,121,count)
+bearing_addition = 90
+if left:
+    bearing_addition -= 180
+threads = []
 for c,i in enumerate(flight_path):
     zoom_level = 17-((i[3]/36000)*5)
     # f.write(f"{c}, {zoom_level}\n")
-    windowseat.get_photo((i[1],i[0]),zoom_level,open("mapboxkey").read().splitlines()[0],i[2]+90,f"photos/{c:04n}")
+    t = threading.Thread(target=windowseat.get_photo, args=((i[1],i[0]),zoom_level,open("mapboxkey").read().splitlines()[0],i[2]+bearing_addition,f"photos/{c:04n}"))
+    threads.append(t)
+    t.start()
+for t in threads:
+    t.join()
+
+code = run(f"ffmpeg -framerate {fps} -i 'photos/%04d.jpg' flight.mp4; rm photos/*.jpg".split(" "))
+if code.returncode != 0:
+    print(f"command 'ffmpeg -framerate {fps} -i 'photos/%04d.jpg' flight.mp4; rm photos/*.jpg' returned an non-zero return code. Make sure you have ffmpeg installed.")
+
 
