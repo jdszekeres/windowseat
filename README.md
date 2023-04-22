@@ -22,7 +22,10 @@ python fullflight.py start_airport end_end duration fps orientation
 ### Output
 
 The script generates a video file named flight.mp4 from satelite image stitched together.
+## Examples
+SLC -> AUS 
 
+![SLC-AUS](github.com/jdszekeres/windowseat/examples/SLC-AUS.gif)
 ## Credits
 This script uses the Global Airport Database by Arash Partow to obtain the latitude and longitude of the airports and airnav.com for runway headings.
 # MIT License
