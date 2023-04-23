@@ -18,14 +18,32 @@ python fullflight.py start_airport end_end duration fps orientation
 - duration: The length of the video in seconds.
 - fps: The frames per second of the video.
 - orientation: The orientation of the camera, either 'l' for left or 'r' for right.
-
 ### Output
 
 The script generates a video file named flight.mp4 from satelite image stitched together.
+
+### or use as library
+```python
+import windowseat
+
+# Retrive coordinates for aiport
+start, end = windowseat.get_db("JFK","LAX") # returns lon, lat to please mapbox api
+# calculate flight path 
+frames = 30 * 15 # fps * seconds
+path = windowseat.get_points_on_line(start, end, frames)
+# calculate initial bearing
+heading = windowseat.get_angle_between_coordinates(start,end)
+heading += 90 # for right window, or -= 90 for left
+zoom = 11 # google maps standard heading between 1 and 22
+for i, v in enumerate(path):
+    windowseat.get_photo(v, zoom, "MAPBOX_API_KEY",heading,f"photos/{i:04n}")
+# use ffmpeg to stitch together
+```
+
 ## Examples
 SLC -> AUS 
 
-![SLC-AUS](github.com/jdszekeres/windowseat/examples/SLC-AUS.gif)
+![SLC-AUS](https://github.com/jdszekeres/windowseat/blob/master/examples/SLC-AUS.gif)
 ## Credits
 This script uses the Global Airport Database by Arash Partow to obtain the latitude and longitude of the airports and airnav.com for runway headings.
 # MIT License
