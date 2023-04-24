@@ -17,7 +17,7 @@ python fullflight.py start_airport end_end duration fps orientation
 - end_location: The ending airport code (e.g., LAX).
 - duration: The length of the video in seconds.
 - fps: The frames per second of the video.
-- orientation: The orientation of the camera, either 'l' for left or 'r' for right.
+- orientation: The orientation of the camera, either 'l' or 'left' for left or 'r' or 'right' for right.
 ### Output
 
 The script generates a video file named flight.mp4 from satelite image stitched together.
