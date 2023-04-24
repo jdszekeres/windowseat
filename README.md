@@ -43,7 +43,7 @@ for i, v in enumerate(path):
 ## Examples
 SLC -> AUS 
 
-![SLC-AUS](https://github.com/jdszekeres/windowseat/blob/master/examples/SLC-AUS.gif)
+![SLC-AUS](https://github.com/jdszekeres/windowseat/blob/master/examples/SLC-AUS.gif?raw=true)
 ## Credits
 This script uses the Global Airport Database by Arash Partow to obtain the latitude and longitude of the airports and airnav.com for runway headings.
 # MIT License
