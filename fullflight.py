@@ -31,13 +31,7 @@ def create_flight_path(start, end, start_bearing, end_bearing, num_points):
         lon = lon1 + frac * (lon2 - lon1)
         coords.append((lat, lon, bearing))
         bearing = (bearing + (end_bearing - start_bearing) / (num_points - 1)) % 360
-        if i < num_points / 2:
-            altitude = (36000 / (num_points / 2)) * i
-        else:
-            altitude = 36000 - (36000 / (num_points / 2)) * (i - num_points / 2)
-        altitudes.append(altitude)
-    altitudes.reverse()
-    coords = [(coord[0], coord[1], coord[2], alt) for coord, alt in zip(coords, altitudes)]
+        
     
     return coords
 
@@ -94,8 +88,7 @@ if left:
     bearing_addition -= 180
 threads = []
 for c,i in enumerate(flight_path):
-    zoom_level = 17-((i[3]/36000)*5)
-    # f.write(f"{c}, {zoom_level}\n")
+    zoom_level = 17
     t = threading.Thread(target=windowseat.get_photo, args=((i[1],i[0]),zoom_level,open("mapboxkey").read().splitlines()[0],i[2]+bearing_addition,f"photos/{c:04n}"))
     threads.append(t)
     t.start()

@@ -20,14 +20,14 @@ python fullflight.py start_airport end_end duration fps orientation
 - orientation: The orientation of the camera, either 'l' for left or 'r' for right.
 ### Output
 
-The script generates a video file named flight.mp4 from satelite image stitched together.
+The script generates a video file named flight.mp4 from satellite images stitched together.
 
 ### or use as library
 ```python
 import windowseat
 
-# Retrive coordinates for aiport
-start, end = windowseat.get_db("JFK","LAX") # returns lon, lat to please mapbox api
+# Retrieve coordinates for airport
+start, end = windowseat.get_db("JFK","LAX") # returns lon, lat to please Mapbox api
 # calculate flight path 
 frames = 30 * 15 # fps * seconds
 path = windowseat.get_points_on_line(start, end, frames)
